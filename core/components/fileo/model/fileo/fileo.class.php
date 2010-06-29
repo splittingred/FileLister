@@ -31,6 +31,8 @@ class Fileo {
             'assetsUrl' => $assetsUrl,
             'cssUrl' => $assetsUrl.'css/',
             'jsUrl' => $assetsUrl.'js/',
+
+            'salt' => $this->modx->getOption('fileo.salt',null,'In dreams begins responsibility.'),
         ),$config);
 
         $this->modx->addPackage('fileo',$this->config['modelPath']);
@@ -81,5 +83,89 @@ class Fileo {
             $chunk->setContent($o);
         }
         return $chunk;
+    }
+
+    /**
+     * Ensures no hacks or relative paths are passed into a path string
+     *
+     * @param string $path The path to sanitize
+     * @return string The sanitized path
+     */
+    public function sanitize($path) {
+        $path = $this->modx->sanitize($path);
+        $path = $this->modx->stripTags($path);
+        $path = str_replace(array('../','./'),'',$path);
+        $path = str_replace('//','/',$path);
+        if (!$this->modx->getOption('fileo.allow_root_paths',$scriptProperties,true)) {
+            $path = ltrim($path,'/');
+        }
+        return $path;
+    }
+
+    public function loadHeaders($file) {
+        if (empty($this->headers)) {
+            if ($this->modx->loadClass('fileo.feoHeaders',$this->config['modelPath'],true,true)) {
+                $this->headers = new feoHeaders($this);
+            } else {
+                $this->modx->log(modX::LOG_LEVEL_ERROR,'[Fileo] Could not load feoHeaders class.');
+                return false;
+            }
+        }
+        $ext = pathinfo($file,PATHINFO_EXTENSION);
+        return $this->headers->output($ext);
+    }
+
+    public function makeKey($key) {
+        return $this->_encrypt($key);
+    }
+    public function parseKey($key) {
+        $key = $this->_decrypt($key);
+        return $this->sanitize($key);
+    }
+
+    private function _encrypt($str) {
+        $key = $this->config['salt'].session_id();
+
+        srand((double)microtime() * 1000000); /* for MCRYPT_RAND */
+        $key = md5($key); /* to improve variance */
+
+        /* open module, create IV */
+        $td = mcrypt_module_open('des','','cfb','');
+        $key = substr($key,0,mcrypt_enc_get_key_size($td));
+        $iv_size = mcrypt_enc_get_iv_size($td);
+        $iv = mcrypt_create_iv($iv_size,MCRYPT_RAND);
+
+        /* initialize encryption handle */
+        if (mcrypt_generic_init($td,$key,$iv) != -1) {
+            /* Encrypt data */
+            $c_t = mcrypt_generic($td,$str);
+            mcrypt_generic_deinit($td);
+            mcrypt_module_close($td);
+            $c_t = $iv.$c_t;
+            return urlencode($c_t);
+        }
+    }
+
+    private function _decrypt($str) {
+        $str = urldecode($str);
+        $key = $this->config['salt'].session_id();
+
+        $key = md5($key);
+
+        /* open module, create IV */
+        $td = mcrypt_module_open('des','','cfb','');
+        $key = substr($key,0,mcrypt_enc_get_key_size($td));
+        $iv_size = mcrypt_enc_get_iv_size($td);
+        $iv = substr($str,0,$iv_size);
+        $str = substr($str,$iv_size);
+
+        /* initialize encryption handle */
+        if (mcrypt_generic_init($td,$key,$iv) != -1) {
+            /* decrypt data */
+            $c_t = mdecrypt_generic($td,$str);
+            mcrypt_generic_deinit($td);
+            mcrypt_module_close($td);
+            return $c_t;
+        }
     }
 }

@@ -9,27 +9,75 @@ if (!($fileo instanceof Fileo)) return '';
 
 /* get path */
 $path = $modx->getOption('path',$scriptProperties,false);
-$path = $modx->sanitize($path);
-$path = $modx->stripTags($path);
+$fileo->sanitize($path);
 if (empty($path) || !is_dir($path)) return '';
 
 /* setup default properties */
 $fileTpl = $modx->getOption('fileTpl',$scriptProperties,'feoFile');
+$directoryTpl = $modx->getOption('directoryTpl',$scriptProperties,'feoDirectory');
+$upTpl = $modx->getOption('upTpl',$scriptProperties,'feoUp');
+$showUp = $modx->getOption('showUp',$scriptProperties,true);
+$fd = $modx->getOption('fd',$_REQUEST,false);
+
+/* get dynpath */
+$dynPath = '';
+if ($fd) {
+    $dynPath = $fileo->parseKey($fd);
+    if ($dynPath == '.') $dynPath = '';
+}
 
 /* iterate across files */
 $files = array();
-foreach (new DirectoryIterator($path) as $file) {
+if (!empty($dynPath) && $dynPath != '/' && $showUp) {
+    $up = dirname($dynPath);
+    $p = '';
+    if ($up != $path) {
+        $key = $fileo->makeKey($up);
+        $p = array('fd' => $key);
+    }
+    $files[] = $fileo->getChunk($upTpl,array(
+        'url' => $modx->makeUrl($modx->resource->get('id'),'',$p),
+    ));
+}
+$curPath = $fileo->sanitize($path.$dynPath);
+
+
+if (!is_dir($curPath)) {
+    /* process as file */
+    $fileo->loadHeaders($curPath);
+    $o = file_get_contents($curPath);
+    echo $o;
+    die();
+}
+
+$count = 0;
+foreach (new DirectoryIterator($curPath) as $file) {
     if (in_array($file,array('.','..','.svn','.DS_Store','_notes'))) continue;
     if (!$file->isReadable()) continue;
+
+    $filePath = $file->getPathname();
+    $filePath = $dynPath.'/'.$file->getFilename();
+    $key = $fileo->makeKey($filePath);
 
     $fileArray = array();
     $fileArray['filename'] = $file->getFilename();
     $fileArray['filesize'] = $file->getSize();
-    if ($file->isFile()) {
-    }
+    $fileArray['path'] = $file->getPathname();
+    $fileArray['dynPath'] = $filePath;
 
-    $files[] = $fileo->getChunk($fileTpl,$fileArray);
+    $fileArray['url'] = $modx->makeUrl($modx->resource->get('id'),'',array(
+        'fd' => $key,
+    ));
+    if ($file->isFile()) {
+        $files[] = $fileo->getChunk($fileTpl,$fileArray);
+    } elseif ($file->isDir()) {
+        $files[] = $fileo->getChunk($directoryTpl,$fileArray);
+    }
+    $count++;
 }
+
+$modx->setPlaceholder('fileo.total',$count);
+$modx->setPlaceholder('fileo.path',$curPath);
 
 /* output */
 $output = implode("\n",$files);
