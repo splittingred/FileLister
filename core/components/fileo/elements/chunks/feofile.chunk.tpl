@@ -1,0 +1,1 @@
+<li class="[[+cls]]"><a>[[+filename]]</a> - <span>[[+filesize]]</span></li>
