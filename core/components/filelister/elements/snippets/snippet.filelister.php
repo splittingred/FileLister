@@ -16,8 +16,6 @@ if (empty($path) || !is_dir($path)) return '';
 $fileTpl = $modx->getOption('fileTpl',$scriptProperties,'feoFile');
 $fileLinkTpl = $modx->getOption('fileLinkTpl',$scriptProperties,'feoFileLink');
 $directoryTpl = $modx->getOption('directoryTpl',$scriptProperties,'feoDirectory');
-$upTpl = $modx->getOption('upTpl',$scriptProperties,'feoUp');
-$showUp = $modx->getOption('showUp',$scriptProperties,true);
 $dateFormat = $modx->getOption('dateFormat',$scriptProperties,'%b %d, %Y');
 $outputSeparator = $modx->getOption('outputSeparator',$scriptProperties,"\n");
 $skipDirs = $modx->getOption('skipDirs',$scriptProperties,'.,..,.svn,.git,.metadata,.tmp,.DS_Store,_notes');
@@ -55,8 +53,8 @@ if (!is_dir($curPath) && is_file($curPath)) {
 $allowDownloadGroups = $modx->getOption('allowDownloadGroups',$scriptProperties,'');
 if (!empty($allowDownloadGroups)) $allowDownloadGroups = explode(',',$allowDownloadGroups);
 
-$canDownload = $modx->getOption('allowDownload',$scriptProperties,false);
-if ($modx->getOption('requireAuthDownload',$scriptProperties,true)) {
+$canDownload = $modx->getOption('allowDownload',$scriptProperties,true);
+if ($modx->getOption('requireAuthDownload',$scriptProperties,false)) {
     $requireAuthContext = $modx->getOption('requireAuthContext',$scriptProperties,$modx->context->get('key'));
     $canDownload = $modx->user->hasSessionContext($requireAuthContext);
 }
@@ -135,20 +133,6 @@ foreach ($directories as $directory) {
 }
 foreach ($files as $file) {
     $list[] = $filelister->getChunk($fileTpl,$file);
-}
-
-
-$up = false;
-if (!empty($relPath) && $relPath != '/' && $showUp) {
-    $up = dirname($relPath);
-    $p = '';
-    if ($up != $path) {
-        $key = $filelister->makeKey($up);
-        $p = array('fd' => $key);
-    }
-    $up = $filelister->getChunk($upTpl,array(
-        'url' => $modx->makeUrl($modx->resource->get('id'),'',$p),
-    ));
 }
 
 /* set placeholders */
