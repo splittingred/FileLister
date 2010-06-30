@@ -17,9 +17,11 @@ $fileTpl = $modx->getOption('fileTpl',$scriptProperties,'feoFile');
 $directoryTpl = $modx->getOption('directoryTpl',$scriptProperties,'feoDirectory');
 $upTpl = $modx->getOption('upTpl',$scriptProperties,'feoUp');
 $showUp = $modx->getOption('showUp',$scriptProperties,true);
-$fd = $modx->getOption('fd',$_REQUEST,false);
+$dateFormat = $modx->getOption('dateFormat',$scriptProperties,'%b %d, %Y');
+$outputSeparator = $modx->getOption('outputSeparator',$scriptProperties,"\n");
 
 /* get dynpath */
+$fd = $modx->getOption('fd',$_REQUEST,false);
 $dynPath = '';
 if ($fd) {
     $dynPath = $fileo->parseKey($fd);
@@ -27,7 +29,7 @@ if ($fd) {
 }
 
 /* iterate across files */
-$files = array();
+$up = false;
 if (!empty($dynPath) && $dynPath != '/' && $showUp) {
     $up = dirname($dynPath);
     $p = '';
@@ -35,7 +37,7 @@ if (!empty($dynPath) && $dynPath != '/' && $showUp) {
         $key = $fileo->makeKey($up);
         $p = array('fd' => $key);
     }
-    $files[] = $fileo->getChunk($upTpl,array(
+    $up = $fileo->getChunk($upTpl,array(
         'url' => $modx->makeUrl($modx->resource->get('id'),'',$p),
     ));
 }
@@ -51,6 +53,8 @@ if (!is_dir($curPath)) {
 }
 
 $count = 0;
+$directories = array();
+$files = array();
 foreach (new DirectoryIterator($curPath) as $file) {
     if (in_array($file,array('.','..','.svn','.DS_Store','_notes'))) continue;
     if (!$file->isReadable()) continue;
@@ -61,7 +65,7 @@ foreach (new DirectoryIterator($curPath) as $file) {
 
     $fileArray = array();
     $fileArray['filename'] = $file->getFilename();
-    $fileArray['filesize'] = $file->getSize();
+    $fileArray['filesize'] = $fileo->formatBytes($file->getSize());
     $fileArray['path'] = $file->getPathname();
     $fileArray['dynPath'] = $filePath;
 
@@ -69,18 +73,22 @@ foreach (new DirectoryIterator($curPath) as $file) {
         'fd' => $key,
     ));
     if ($file->isFile()) {
+        $fileArray['lastmod'] = $file->getMTime();
+        $fileArray['dateFormat'] = $dateFormat;
         $files[] = $fileo->getChunk($fileTpl,$fileArray);
     } elseif ($file->isDir()) {
-        $files[] = $fileo->getChunk($directoryTpl,$fileArray);
+        $directories[] = $fileo->getChunk($directoryTpl,$fileArray);
     }
     $count++;
 }
+
+$list = array_merge($directories,$files);
 
 $modx->setPlaceholder('fileo.total',$count);
 $modx->setPlaceholder('fileo.path',$curPath);
 
 /* output */
-$output = implode("\n",$files);
+$output = implode($outputSeparator,$list);
 $toPlaceholder = $modx->getOption('toPlaceholder',$scriptProperties,false);
 if ($toPlaceholder) {
     $modx->setPlaceholder($toPlaceholder,$output);
