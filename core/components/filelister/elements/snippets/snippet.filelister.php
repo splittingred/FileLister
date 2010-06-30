@@ -19,6 +19,8 @@ $upTpl = $modx->getOption('upTpl',$scriptProperties,'feoUp');
 $showUp = $modx->getOption('showUp',$scriptProperties,true);
 $dateFormat = $modx->getOption('dateFormat',$scriptProperties,'%b %d, %Y');
 $outputSeparator = $modx->getOption('outputSeparator',$scriptProperties,"\n");
+$skipDirs = $modx->getOption('skipDirs',$scriptProperties,'.,..,.svn,.git,.metadata,.tmp,.DS_Store,_notes');
+$skipDirs = explode(',',$skipDirs);
 
 /* get dynpath */
 $fd = $modx->getOption('fd',$_REQUEST,false);
@@ -56,7 +58,7 @@ $count = 0;
 $directories = array();
 $files = array();
 foreach (new DirectoryIterator($curPath) as $file) {
-    if (in_array($file,array('.','..','.svn','.DS_Store','_notes'))) continue;
+    if (in_array($file,$skipDirs)) continue;
     if (!$file->isReadable()) continue;
 
     $filePath = $file->getPathname();

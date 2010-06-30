@@ -1,8 +1,8 @@
 <?php
 /**
- * Default properties for Fileo snippet
+ * Default properties for FileLister snippet
  *
- * @package fileo
+ * @package filelister
  * @subpackage build
  */
 $properties = array(

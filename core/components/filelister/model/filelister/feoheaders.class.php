@@ -196,7 +196,7 @@ class feoHeaders {
 
     function __construct(FileLister &$filelister,array $config = array()) {
         $this->filelister =& $filelister;
-        $this->modx =& $fileo->modx;
+        $this->modx =& $filelister->modx;
     }
 
     public function output($extension) {
