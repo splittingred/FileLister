@@ -29,6 +29,13 @@
  */
 $properties = array(
     array(
+        'name' => 'path',
+        'desc' => 'The path to browse from.',
+        'type' => 'textfield',
+        'options' => '',
+        'value' => '',
+    ),
+    array(
         'name' => 'fileTpl',
         'desc' => 'The chunk for each file listing.',
         'type' => 'textfield',
@@ -122,7 +129,7 @@ $properties = array(
             array('text' => 'Size','value' => 'size'),
             array('text' => 'Extension','value' => 'extension'),
         ),
-        'value' => '',
+        'value' => 'filename',
     ),
     array(
         'name' => 'sortDir',
