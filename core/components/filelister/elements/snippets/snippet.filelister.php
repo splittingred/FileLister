@@ -7,6 +7,7 @@
 $filelister = $modx->getService('filelister','FileLister',$modx->getOption('filelister.core_path',null,$modx->getOption('core_path').'components/filelister/').'model/filelister/',$scriptProperties);
 if (!($filelister instanceof filelister)) return '';
 
+$modx->setLogTarget('ECHO');
 /* get path */
 $path = $modx->getOption('path',$scriptProperties,false);
 $filelister->sanitize($path);
@@ -25,16 +26,14 @@ $placeholderPrefix = $modx->getOption('placeholderPrefix',$scriptProperties,'fil
 $pathSeparator = $modx->getOption('pathSeparator',$scriptProperties,'/');
 $pathTpl = $modx->getOption('pathTpl',$scriptProperties,'feoPathLink');
 
-/* get dynpath */
+/* get relPath and curPath */
 $fd = $modx->getOption('fd',$_REQUEST,false);
-$dynPath = '';
+$relPath = '';
 if ($fd) {
-    $dynPath = $filelister->parseKey($fd);
-    if ($dynPath == '.') $dynPath = '';
+    $relPath = $filelister->parseKey($fd);
+    if ($relPath == '.') $relPath = '';
 }
-
-
-$curPath = $filelister->sanitize($path.$dynPath);
+$curPath = $filelister->sanitize($path.$relPath);
 
 /* if pointing to file, output file */
 if (!is_dir($curPath)) {
@@ -55,14 +54,14 @@ foreach (new DirectoryIterator($curPath) as $file) {
     if (!$file->isReadable()) continue;
 
     $filePath = $file->getPathname();
-    $filePath = $dynPath.(!empty($dynPath) ? '/' : '').$file->getFilename();
+    $filePath = $relPath.(!empty($relPath) ? '/' : '').$file->getFilename();
     $key = $filelister->makeKey($filePath);
 
     $fileArray = array();
     $fileArray['filename'] = $file->getFilename();
     $fileArray['filesize'] = $filelister->formatBytes($file->getSize());
     $fileArray['path'] = $file->getPathname();
-    $fileArray['dynPath'] = $filePath;
+    $fileArray['relPath'] = $filePath;
 
     $fileArray['url'] = $modx->makeUrl($modx->resource->get('id'),'',array(
         'fd' => $key,
@@ -81,8 +80,8 @@ foreach (new DirectoryIterator($curPath) as $file) {
 
 
 $up = false;
-if (!empty($dynPath) && $dynPath != '/' && $showUp) {
-    $up = dirname($dynPath);
+if (!empty($relPath) && $relPath != '/' && $showUp) {
+    $up = dirname($relPath);
     $p = '';
     if ($up != $path) {
         $key = $filelister->makeKey($up);
@@ -99,8 +98,8 @@ $placeholders = array(
     'total' => $count,
     'total.files' => $fileCount,
     'total.directories' => $directoryCount,
-    'path' => $filelister->parsePathIntoLinks($dynPath,$path,$pathTpl,$pathSeparator),
-    'dynPath' => $dynPath,
+    'path' => $filelister->parsePathIntoLinks($relPath,$path,$pathTpl,$pathSeparator),
+    'relativePath' => $relPath,
 );
 $modx->toPlaceholders($placeholders,$placeholderPrefix);
 

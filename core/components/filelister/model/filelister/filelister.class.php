@@ -93,7 +93,6 @@ class FileLister {
      * @return string The sanitized path
      */
     public function sanitize($path) {
-        $path = $this->modx->sanitize($path);
         $path = $this->modx->stripTags($path);
         $path = str_replace(array('../','./'),'',$path);
         $path = str_replace('//','/',$path);
