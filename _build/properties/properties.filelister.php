@@ -139,7 +139,7 @@ $properties = array(
             array('text' => 'DESC','value' => 'ASC'),
             array('text' => 'DESC','value' => 'ASC'),
         ),
-        'value' => '',
+        'value' => 'ASC',
     ),
     array(
         'name' => 'allowDownload',
