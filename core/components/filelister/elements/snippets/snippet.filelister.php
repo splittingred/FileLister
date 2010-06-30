@@ -7,7 +7,6 @@
 $filelister = $modx->getService('filelister','FileLister',$modx->getOption('filelister.core_path',null,$modx->getOption('core_path').'components/filelister/').'model/filelister/',$scriptProperties);
 if (!($filelister instanceof filelister)) return '';
 
-$modx->setLogTarget('ECHO');
 /* get path */
 $path = $modx->getOption('path',$scriptProperties,false);
 $filelister->sanitize($path);
