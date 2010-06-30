@@ -65,6 +65,7 @@ class FileLister {
         $chunk->setCacheable(false);
         return $chunk->process($properties);
     }
+
     /**
      * Returns a modChunk object from a template file.
      *
@@ -102,6 +103,12 @@ class FileLister {
         return $path;
     }
 
+    /**
+     * Load the appropriate headers for a file
+     *
+     * @param string $file The name of the file
+     * @return boolean True if successful
+     */
     public function loadHeaders($file) {
         if (empty($this->headers)) {
             if ($this->modx->loadClass('filelister.feoHeaders',$this->config['modelPath'],true,true)) {
@@ -115,14 +122,34 @@ class FileLister {
         return $this->headers->output($ext);
     }
 
+    /**
+     * Makes an encrypted key for a path
+     * 
+     * @param string $key The string to encrypt into a key
+     * @return string The encrypted hash
+     */
     public function makeKey($key) {
         return $this->_encrypt($key);
     }
+
+    /**
+     * Parses an encrypted key to return a path
+     *
+     * @param string $key The string to decrypt
+     * @return string The decrypted hash, now a sanitized path
+     */
     public function parseKey($key) {
         $key = $this->_decrypt($key);
         return $this->sanitize($key);
     }
 
+    /**
+     * Encrypts a string with a md5/mcrypt salted hash
+     * 
+     * @access private
+     * @param string $str The string to encrypt
+     * @return An encrypted, salted hash
+     */
     private function _encrypt($str) {
         $key = $this->config['salt'].session_id();
 
@@ -146,6 +173,13 @@ class FileLister {
         }
     }
 
+    /**
+     * Decrypts a string based upon the set hash
+     *
+     * @access private
+     * @param string $str The string to decrypt
+     * @return A decrypted string
+     */
     private function _decrypt($str) {
         $str = urldecode($str);
         $key = $this->config['salt'].session_id();
@@ -169,7 +203,13 @@ class FileLister {
         }
     }
 
-
+    /**
+     * Returns a formatted filesize
+     * 
+     * @param string $bytes The number of bytes
+     * @param integer $precision The precision to format to
+     * @return string The formatted size
+     */
     public function formatBytes($bytes, $precision = 2) {
         $units = array('b', 'kb', 'mb', 'gb', 'tb');
 
@@ -180,5 +220,38 @@ class FileLister {
         $bytes /= pow(1024, $pow);
 
         return round($bytes, $precision) . ' ' . $units[$pow];
+    }
+
+    /**
+     * Translates a path into clickable links for browsing
+     *
+     * @param string $path The current path
+     * @param string $root The root of the path being processed
+     * @param string $tpl The Chunk name for each path item
+     * @param string $separator The separator between each path item
+     */
+    public function parsePathIntoLinks($path,$root = '/',$tpl = 'feoPathLink',$separator = '/') {
+        $root = trim($root,'/');
+        $output = $this->getChunk($tpl,array(
+            'dir' => $root,
+            'key' => '',
+            'separator' => $separator,
+            'curLevel' => '',
+        ));
+        if (!empty($path)) {
+            $path = explode('/',$path);
+            $curLevel = '';
+            foreach ($path as $dir) {
+                $curLevel = ltrim($curLevel.'/'.$dir,'/');
+                $output .= $this->getChunk($tpl,array(
+                    'dir' => $dir,
+                    'curLevel' => $curLevel,
+                    'key' => $this->makeKey($curLevel),
+                    'separator' => $separator,
+                ));
+            }
+        }
+        $output = str_replace('//','/',$output);
+        return $output;
     }
 }

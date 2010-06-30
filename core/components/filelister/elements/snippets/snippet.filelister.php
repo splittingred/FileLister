@@ -21,6 +21,9 @@ $dateFormat = $modx->getOption('dateFormat',$scriptProperties,'%b %d, %Y');
 $outputSeparator = $modx->getOption('outputSeparator',$scriptProperties,"\n");
 $skipDirs = $modx->getOption('skipDirs',$scriptProperties,'.,..,.svn,.git,.metadata,.tmp,.DS_Store,_notes');
 $skipDirs = explode(',',$skipDirs);
+$placeholderPrefix = $modx->getOption('placeholderPrefix',$scriptProperties,'filelister');
+$pathSeparator = $modx->getOption('pathSeparator',$scriptProperties,'/');
+$pathTpl = $modx->getOption('pathTpl',$scriptProperties,'feoPathLink');
 
 /* get dynpath */
 $fd = $modx->getOption('fd',$_REQUEST,false);
@@ -30,31 +33,21 @@ if ($fd) {
     if ($dynPath == '.') $dynPath = '';
 }
 
-/* iterate across files */
-$up = false;
-if (!empty($dynPath) && $dynPath != '/' && $showUp) {
-    $up = dirname($dynPath);
-    $p = '';
-    if ($up != $path) {
-        $key = $filelister->makeKey($up);
-        $p = array('fd' => $key);
-    }
-    $up = $filelister->getChunk($upTpl,array(
-        'url' => $modx->makeUrl($modx->resource->get('id'),'',$p),
-    ));
-}
+
 $curPath = $filelister->sanitize($path.$dynPath);
 
-
+/* if pointing to file, output file */
 if (!is_dir($curPath)) {
-    /* process as file */
     $filelister->loadHeaders($curPath);
     $o = file_get_contents($curPath);
     echo $o;
     die();
 }
 
+/* iterate list of files/dirs */
 $count = 0;
+$directoryCount = 0;
+$fileCount = 0;
 $directories = array();
 $files = array();
 foreach (new DirectoryIterator($curPath) as $file) {
@@ -62,7 +55,7 @@ foreach (new DirectoryIterator($curPath) as $file) {
     if (!$file->isReadable()) continue;
 
     $filePath = $file->getPathname();
-    $filePath = $dynPath.'/'.$file->getFilename();
+    $filePath = $dynPath.(!empty($dynPath) ? '/' : '').$file->getFilename();
     $key = $filelister->makeKey($filePath);
 
     $fileArray = array();
@@ -78,16 +71,38 @@ foreach (new DirectoryIterator($curPath) as $file) {
         $fileArray['lastmod'] = $file->getMTime();
         $fileArray['dateFormat'] = $dateFormat;
         $files[] = $filelister->getChunk($fileTpl,$fileArray);
+        $fileCount++;
     } elseif ($file->isDir()) {
         $directories[] = $filelister->getChunk($directoryTpl,$fileArray);
+        $directoryCount++;
     }
     $count++;
 }
 
+
+$up = false;
+if (!empty($dynPath) && $dynPath != '/' && $showUp) {
+    $up = dirname($dynPath);
+    $p = '';
+    if ($up != $path) {
+        $key = $filelister->makeKey($up);
+        $p = array('fd' => $key);
+    }
+    $up = $filelister->getChunk($upTpl,array(
+        'url' => $modx->makeUrl($modx->resource->get('id'),'',$p),
+    ));
+}
 $list = array_merge($directories,$files);
 
-$modx->setPlaceholder('filelister.total',$count);
-$modx->setPlaceholder('filelister.path',$curPath);
+/* set placeholders */
+$placeholders = array(
+    'total' => $count,
+    'total.files' => $fileCount,
+    'total.directories' => $directoryCount,
+    'path' => $filelister->parsePathIntoLinks($dynPath,$path,$pathTpl,$pathSeparator),
+    'dynPath' => $dynPath,
+);
+$modx->toPlaceholders($placeholders,$placeholderPrefix);
 
 /* output */
 $output = implode($outputSeparator,$list);
