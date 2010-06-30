@@ -2,7 +2,7 @@
 /**
  * Default Lexicon Topic
  *
- * @package fileo
+ * @package filelister
  * @subpackge lexicon
  */
-$_lang['fileo'] = 'Fileo';
+$_lang['filelister'] = 'FileLister';

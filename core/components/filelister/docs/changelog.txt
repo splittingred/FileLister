@@ -1,0 +1,4 @@
+Changelog for FileLister.
+
+FileLister 1.0.0
+====================================

@@ -2,7 +2,7 @@
 /**
  * Build Schema script
  *
- * @package fileo
+ * @package filelister
  * @subpackage build
  */
 $mtime = microtime();
@@ -23,9 +23,9 @@ $modx->setLogTarget('ECHO');
 $root = MODX_BASE_PATH;
 $sources = array(
     'root' => $root,
-    'core' => $root.'core/components/fileo/',
-    'model' => $root.'core/components/fileo/model/',
-    'assets' => $root.'assets/components/fileo/',
+    'core' => $root.'core/components/filelister/',
+    'model' => $root.'core/components/filelister/model/',
+    'assets' => $root.'assets/components/filelister/',
 );
 $manager= $modx->getManager();
 $generator= $manager->getGenerator();
@@ -53,7 +53,7 @@ $generator->mapHeader= <<<EOD
  * [+phpdoc-package+]
  */
 EOD;
-$generator->parseSchema(dirname(__FILE__) . '/fileo.mysql.schema.xml', $sources['model']);
+$generator->parseSchema(dirname(__FILE__) . '/filelister.mysql.schema.xml', $sources['model']);
 
 
 $mtime= microtime();

@@ -1,7 +1,7 @@
 <?php
 class feoHeaders {
     public $modx;
-    public $fileo;
+    public $filelister;
     public $ext = 'txt';
 
     public $types = array(
@@ -194,8 +194,8 @@ class feoHeaders {
         'zip' => 'application/zip',
     );
 
-    function __construct(Fileo &$fileo,array $config = array()) {
-        $this->fileo =& $fileo;
+    function __construct(FileLister &$filelister,array $config = array()) {
+        $this->filelister =& $filelister;
         $this->modx =& $fileo->modx;
     }
 

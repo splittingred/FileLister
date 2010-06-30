@@ -2,14 +2,14 @@
 /**
  * File listing snippet
  * 
- * @package fileo
+ * @package filelister
  */
-$fileo = $modx->getService('fileo','Fileo',$modx->getOption('fileo.core_path',null,$modx->getOption('core_path').'components/fileo/').'model/fileo/',$scriptProperties);
-if (!($fileo instanceof Fileo)) return '';
+$filelister = $modx->getService('filelister','FileLister',$modx->getOption('filelister.core_path',null,$modx->getOption('core_path').'components/filelister/').'model/filelister/',$scriptProperties);
+if (!($filelister instanceof filelister)) return '';
 
 /* get path */
 $path = $modx->getOption('path',$scriptProperties,false);
-$fileo->sanitize($path);
+$filelister->sanitize($path);
 if (empty($path) || !is_dir($path)) return '';
 
 /* setup default properties */
@@ -24,7 +24,7 @@ $outputSeparator = $modx->getOption('outputSeparator',$scriptProperties,"\n");
 $fd = $modx->getOption('fd',$_REQUEST,false);
 $dynPath = '';
 if ($fd) {
-    $dynPath = $fileo->parseKey($fd);
+    $dynPath = $filelister->parseKey($fd);
     if ($dynPath == '.') $dynPath = '';
 }
 
@@ -34,19 +34,19 @@ if (!empty($dynPath) && $dynPath != '/' && $showUp) {
     $up = dirname($dynPath);
     $p = '';
     if ($up != $path) {
-        $key = $fileo->makeKey($up);
+        $key = $filelister->makeKey($up);
         $p = array('fd' => $key);
     }
-    $up = $fileo->getChunk($upTpl,array(
+    $up = $filelister->getChunk($upTpl,array(
         'url' => $modx->makeUrl($modx->resource->get('id'),'',$p),
     ));
 }
-$curPath = $fileo->sanitize($path.$dynPath);
+$curPath = $filelister->sanitize($path.$dynPath);
 
 
 if (!is_dir($curPath)) {
     /* process as file */
-    $fileo->loadHeaders($curPath);
+    $filelister->loadHeaders($curPath);
     $o = file_get_contents($curPath);
     echo $o;
     die();
@@ -61,11 +61,11 @@ foreach (new DirectoryIterator($curPath) as $file) {
 
     $filePath = $file->getPathname();
     $filePath = $dynPath.'/'.$file->getFilename();
-    $key = $fileo->makeKey($filePath);
+    $key = $filelister->makeKey($filePath);
 
     $fileArray = array();
     $fileArray['filename'] = $file->getFilename();
-    $fileArray['filesize'] = $fileo->formatBytes($file->getSize());
+    $fileArray['filesize'] = $filelister->formatBytes($file->getSize());
     $fileArray['path'] = $file->getPathname();
     $fileArray['dynPath'] = $filePath;
 
@@ -75,17 +75,17 @@ foreach (new DirectoryIterator($curPath) as $file) {
     if ($file->isFile()) {
         $fileArray['lastmod'] = $file->getMTime();
         $fileArray['dateFormat'] = $dateFormat;
-        $files[] = $fileo->getChunk($fileTpl,$fileArray);
+        $files[] = $filelister->getChunk($fileTpl,$fileArray);
     } elseif ($file->isDir()) {
-        $directories[] = $fileo->getChunk($directoryTpl,$fileArray);
+        $directories[] = $filelister->getChunk($directoryTpl,$fileArray);
     }
     $count++;
 }
 
 $list = array_merge($directories,$files);
 
-$modx->setPlaceholder('fileo.total',$count);
-$modx->setPlaceholder('fileo.path',$curPath);
+$modx->setPlaceholder('filelister.total',$count);
+$modx->setPlaceholder('filelister.path',$curPath);
 
 /* output */
 $output = implode($outputSeparator,$list);

@@ -1,10 +1,10 @@
 <?php
 /**
- * @package Fileo
+ * @package FileLister
  */
-class Fileo {
+class FileLister {
     /**
-     * Fileo constructor
+     * FileLister constructor
      *
      * @param modX &$modx A reference to the modX instance.
      * @param array $config An array of configuration options. Optional.
@@ -15,9 +15,9 @@ class Fileo {
         /* allows you to set paths in different environments
          * this allows for easier SVN management of files
          */
-        $corePath = $this->modx->getOption('fileo.core_path',null,MODX_CORE_PATH.'components/fileo/');
-        $assetsPath = $this->modx->getOption('fileo.assets_path',null,MODX_ASSETS_PATH.'components/fileo/');
-        $assetsUrl = $this->modx->getOption('fileo.assets_url',null,MODX_ASSETS_URL.'components/fileo/');
+        $corePath = $this->modx->getOption('filelister.core_path',null,MODX_CORE_PATH.'components/filelister/');
+        $assetsPath = $this->modx->getOption('filelister.assets_path',null,MODX_ASSETS_PATH.'components/filelister/');
+        $assetsUrl = $this->modx->getOption('filelister.assets_url',null,MODX_ASSETS_URL.'components/filelister/');
 
         /* loads some default paths for easier management */
         $this->config = array_merge(array(
@@ -32,11 +32,11 @@ class Fileo {
             'cssUrl' => $assetsUrl.'css/',
             'jsUrl' => $assetsUrl.'js/',
 
-            'salt' => $this->modx->getOption('fileo.salt',null,'In dreams begins responsibility.'),
+            'salt' => $this->modx->getOption('filelister.salt',null,'In dreams begins responsibility.'),
         ),$config);
 
-        $this->modx->addPackage('fileo',$this->config['modelPath']);
-        $this->modx->lexicon->load('fileo:default');
+        $this->modx->addPackage('filelister',$this->config['modelPath']);
+        $this->modx->lexicon->load('filelister:default');
     }
 
     /**
@@ -96,7 +96,7 @@ class Fileo {
         $path = $this->modx->stripTags($path);
         $path = str_replace(array('../','./'),'',$path);
         $path = str_replace('//','/',$path);
-        if (!$this->modx->getOption('fileo.allow_root_paths',$scriptProperties,true)) {
+        if (!$this->modx->getOption('filelister.allow_root_paths',$scriptProperties,true)) {
             $path = ltrim($path,'/');
         }
         return $path;
@@ -104,10 +104,10 @@ class Fileo {
 
     public function loadHeaders($file) {
         if (empty($this->headers)) {
-            if ($this->modx->loadClass('fileo.feoHeaders',$this->config['modelPath'],true,true)) {
+            if ($this->modx->loadClass('filelister.feoHeaders',$this->config['modelPath'],true,true)) {
                 $this->headers = new feoHeaders($this);
             } else {
-                $this->modx->log(modX::LOG_LEVEL_ERROR,'[Fileo] Could not load feoHeaders class.');
+                $this->modx->log(modX::LOG_LEVEL_ERROR,'[FileLister] Could not load feoHeaders class.');
                 return false;
             }
         }

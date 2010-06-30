@@ -1,30 +1,30 @@
 <?php
 /**
- * Fileo
+ * FileLister
  *
  * Copyright 2010 by Shaun McCormick <shaun@modxcms.com>
  *
- * This file is part of Fileo, a file listing Extra.
+ * This file is part of FileLister, a file listing Extra.
  *
- * Fileo is free software; you can redistribute it and/or modify it under the
+ * FileLister is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your option) any later
  * version.
  *
- * Fileo is distributed in the hope that it will be useful, but WITHOUT ANY
+ * FileLister is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * Fileo; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * FileLister; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place, Suite 330, Boston, MA 02111-1307 USA
  *
- * @package fileo
+ * @package filelister
  */
 /**
- * Fileo build script
+ * FileLister build script
  *
- * @package fileo
+ * @package filelister
  * @subpackage build
  */
 $mtime = microtime();
@@ -34,8 +34,8 @@ $tstart = $mtime;
 set_time_limit(0);
 
 /* define package */
-define('PKG_NAME','Fileo');
-define('PKG_NAME_LOWER','fileo');
+define('PKG_NAME','FileLister');
+define('PKG_NAME_LOWER','filelister');
 define('PKG_VERSION','1.0.0');
 define('PKG_RELEASE','beta1');
 
