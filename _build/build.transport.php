@@ -45,6 +45,8 @@ $sources= array (
     'root' => $root,
     'build' => $root .'_build/',
     'resolvers' => $root . '_build/resolvers/',
+    'includes' => $root . '_build/includes/',
+    'properties' => $root . '_build/properties/',
     'data' => $root . '_build/data/',
     'source_core' => $root.'core/components/'.PKG_NAME_LOWER,
     'source_assets' => $root.'assets/components/'.PKG_NAME_LOWER,
@@ -55,6 +57,7 @@ unset($root);
 
 /* override with your own defines here (see build.config.sample.php) */
 require_once $sources['build'] . 'build.config.php';
+require_once $sources['includes'] . 'functions.php';
 require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
 
 $modx= new modX();
