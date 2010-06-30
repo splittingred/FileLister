@@ -1,1 +1,1 @@
-<a href="[[~[[*id]]]]?fd=[[+key]]">[[+dir]]</a>[[+separator]]
+<a href="[[~[[*id]]]]?[[+navKey]]=[[+key]]">[[+dir]]</a>[[+separator]]

@@ -2,6 +2,8 @@ Changelog for FileLister.
 
 FileLister 1.0.0
 ====================================
+- Added ability to restrict file download to logged-in users, specific usergroup(s)
+- Added sorting algorithms to allow size, extension, date sorting
 - Sorts directories on top now
 - Added placeholders for number of directories and files, and total objects
 - Allow filelister placeholder prefix to be configurable

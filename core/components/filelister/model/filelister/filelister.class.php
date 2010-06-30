@@ -26,6 +26,7 @@ class FileLister {
             'chunksPath' => $corePath.'elements/chunks/',
             'snippetsPath' => $corePath.'elements/snippets/',
             'controllersPath' => $corePath.'controllers/',
+            'includesPath' => $corePath.'includes/',
 
             'assetsPath' => $assetsPath,
             'assetsUrl' => $assetsUrl,
@@ -117,8 +118,7 @@ class FileLister {
                 return false;
             }
         }
-        $ext = pathinfo($file,PATHINFO_EXTENSION);
-        return $this->headers->output($ext);
+        return $this->headers->output($file);
     }
 
     /**
@@ -150,7 +150,7 @@ class FileLister {
      * @return An encrypted, salted hash
      */
     private function _encrypt($str) {
-        $key = $this->config['salt'].session_id();
+        $key = $this->config['salt'];
 
         srand((double)microtime() * 1000000); /* for MCRYPT_RAND */
         $key = md5($key); /* to improve variance */
@@ -181,7 +181,7 @@ class FileLister {
      */
     private function _decrypt($str) {
         $str = urldecode($str);
-        $key = $this->config['salt'].session_id();
+        $key = $this->config['salt'];
 
         $key = md5($key);
 
@@ -229,13 +229,14 @@ class FileLister {
      * @param string $tpl The Chunk name for each path item
      * @param string $separator The separator between each path item
      */
-    public function parsePathIntoLinks($path,$root = '/',$tpl = 'feoPathLink',$separator = '/') {
+    public function parsePathIntoLinks($path,$root = '/',$tpl = 'feoPathLink',$separator = '/',$navKey = 'fd') {
         $root = trim($root,'/');
         $output = $this->getChunk($tpl,array(
             'dir' => $root,
             'key' => '',
             'separator' => $separator,
             'curLevel' => '',
+            'navKey' => $navKey,
         ));
         if (!empty($path)) {
             $path = explode('/',$path);
@@ -247,6 +248,7 @@ class FileLister {
                     'curLevel' => $curLevel,
                     'key' => $this->makeKey($curLevel),
                     'separator' => $separator,
+                    'navKey' => $navKey,
                 ));
             }
         }

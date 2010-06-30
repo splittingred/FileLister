@@ -199,11 +199,15 @@ class feoHeaders {
         $this->modx =& $filelister->modx;
     }
 
-    public function output($extension) {
+    public function output($file) {
+        $extension = pathinfo($file,PATHINFO_EXTENSION);
+        $filename = pathinfo($file,PATHINFO_BASENAME);
+
         $mt = 'text/plain';
         if (isset($this->types[$extension])) {
             $mt = $this->types[$extension];
         }
         header('Content-type: '.$mt);
+        header('Content-Disposition: inline; filename="'.$filename.'"');
     }
 }
