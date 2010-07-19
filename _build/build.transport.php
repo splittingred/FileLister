@@ -37,7 +37,7 @@ set_time_limit(0);
 define('PKG_NAME','FileLister');
 define('PKG_NAME_LOWER','filelister');
 define('PKG_VERSION','1.0.0');
-define('PKG_RELEASE','beta1');
+define('PKG_RELEASE','beta2');
 
 /* define sources */
 $root = dirname(dirname(__FILE__)).'/';

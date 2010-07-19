@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model package="filelister" baseClass="xPDOObject" platform="mysql" defaultEngine="MyISAM">
+    <!--<object class="fileDownload" table="filelister_downloads" extends="xPDOObject">
+
+    </object>-->
+</model>

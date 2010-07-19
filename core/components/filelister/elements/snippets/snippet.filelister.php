@@ -158,6 +158,10 @@ foreach ($files as $file) {
 }
 
 /* set placeholders */
+$homePathName = $modx->getOption('homePathName',$scriptProperties,'');
+if (!empty($homePathName)) {
+    $path = $homePathName;
+}
 $placeholders = array(
     'total' => $count,
     'total.files' => $fileCount,
