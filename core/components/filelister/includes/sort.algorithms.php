@@ -47,3 +47,10 @@ function feoSortBySizeASC($a,$b) {
 function feoSortBySizeDESC($a,$b) {
     return $a['bytesize'] < $b['bytesize'];
 }
+/* name */
+function feoSortByNameASC($a,$b) {
+    return strcmp($a['filename'], $b['filename']);
+}
+function feoSortByNameDESC($a,$b) {
+    return -1 * strcmp($a['filename'], $b['filename']);
+}

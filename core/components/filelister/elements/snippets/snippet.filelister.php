@@ -140,6 +140,8 @@ $sortDir = $modx->getOption('sortDir',$scriptProperties,'ASC');
 include_once $filelister->config['includesPath'].'sort.algorithms.php';
 $algo = '';
 switch ($sortBy.'-'.$sortDir) {
+    case 'filename-ASC': case 'name-ASC': $algo = 'feoSortByNameASC'; break;
+    case 'filename-DESC': case 'name-DESC': $algo = 'feoSortByNameDESC'; break;
     case 'extension-ASC': $algo = 'feoSortByExtensionASC'; break;
     case 'extension-DESC': $algo = 'feoSortByExtensionDESC'; break;
     case 'date-ASC': case 'lastmod-ASC': $algo = 'feoSortByLastModifiedASC'; break;
@@ -153,9 +155,11 @@ unset($algo,$sortBy,$sortDir);
 foreach ($directories as $directory) {
     $list[] = $filelister->getChunk($directoryTpl,$directory);
 }
+unset($directory);
 foreach ($files as $file) {
     $list[] = $filelister->getChunk($fileTpl,$file);
 }
+unset($file);
 
 /* set placeholders */
 $homePathName = $modx->getOption('homePathName',$scriptProperties,'');
