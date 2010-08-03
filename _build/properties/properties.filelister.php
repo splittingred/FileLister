@@ -181,6 +181,22 @@ $properties = array(
         'lexicon' => 'filelister:properties',
     ),
     array(
+        'name' => 'showDownloads',
+        'desc' => 'prop_feo.showdownloads_desc',
+        'type' => 'combo-boolean',
+        'options' => '',
+        'value' => true,
+        'lexicon' => 'filelister:properties',
+    ),
+    array(
+        'name' => 'uniqueDownloads',
+        'desc' => 'prop_feo.uniquedownloads_desc',
+        'type' => 'combo-boolean',
+        'options' => '',
+        'value' => true,
+        'lexicon' => 'filelister:properties',
+    ),
+    array(
         'name' => 'toPlaceholder',
         'desc' => 'prop_feo.toplaceholder_desc',
         'type' => 'textfield',

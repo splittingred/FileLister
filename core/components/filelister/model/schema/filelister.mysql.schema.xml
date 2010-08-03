@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model package="filelister" baseClass="xPDOObject" platform="mysql" defaultEngine="MyISAM">
-    <!--<object class="fileDownload" table="filelister_downloads" extends="xPDOObject">
-
-    </object>-->
+    <object class="feoDownload" table="filelister_downloads" extends="xPDOSimpleObject">
+        <field key="path" dbtype="varchar" precision="255" phptype="string" null="false" default="" index="index" />
+        <field key="ip" dbtype="varchar" precision="25" phptype="string" null="false" default="0.0.0.0" />
+        <field key="downloadedon" dbtype="datetime" phptype="datetime" null="false" />
+        <field key="unique" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" index="index" />
+        <field key="referer" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="country" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="region" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="city" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="zip" dbtype="varchar" precision="30" phptype="string" null="false" default="" />
+        <field key="geolocation" dbtype="text" phptype="json" null="false" default="{}" />
+        <field key="user" dbtype="int" precision="10" phptype="integer" null="false" default="0" index="index" />
+        
+        <aggregate alias="User" class="modUser" local="user" foreign="id" cardinality="one" owner="foreign" />
+    </object>
 </model>

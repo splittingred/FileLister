@@ -51,5 +51,7 @@ $_lang['prop_feo.sortdir_desc'] = 'The direction to sort by for each file.';
 $_lang['prop_feo.allowdownload_desc'] = 'If false, will disable viewing and downloads of any files.';
 $_lang['prop_feo.requireauthdownload_desc'] = 'If true, will require users be logged in to view or download a file.';
 $_lang['prop_feo.allowdownloadgroups_desc'] = 'A comma-separated list that, if set, will restrict file viewing/downloading to users in the specified groups.';
+$_lang['prop_feo.showdownloads_desc'] = 'If true, will show download counts next to files.';
+$_lang['prop_feo.uniquedownloads_desc'] = 'If true, will show only unique downloads - meaning one download count per IP.';
 $_lang['prop_feo.toplaceholder_desc'] = 'If set, will set the output to a placeholder with the specified name rather than directly outputting it.';
 $_lang['prop_feo.navkey_desc'] = 'The REQUEST navigation key used for the browsing.';

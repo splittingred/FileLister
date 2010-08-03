@@ -50,6 +50,8 @@ $showFiles = $modx->getOption('showFiles',$scriptProperties,true);
 $showDirectories = $modx->getOption('showDirectories',$scriptProperties,true);
 $showExt = $modx->getOption('showExt',$scriptProperties,'');
 if (!empty($showExt)) $showExt = explode(',',$showExt);
+$showDownloads = $modx->getOption('showDownloads',$scriptProperties,true);
+$uniqueDownloads = $modx->getOption('uniqueDownloads',$scriptProperties,true);
 
 /* get relPath and curPath */
 $fd = $modx->getOption($navKey,$_REQUEST,false);
@@ -62,6 +64,50 @@ $curPath = $filelister->sanitize($path.$relPath);
 
 /* if pointing to file, output file */
 if (!is_dir($curPath) && is_file($curPath)) {
+    /* do download tracking and geolocation */
+    $tenMinAgo = time() - (60 * 5); /* prevent duplicate download tracking */
+    $tenMinAgo = strftime('%Y-%m-%d %H:%M:%S',$tenMinAgo);
+    $double = $modx->getCount('feoDownload',array(
+        'path' => $curPath,
+        'ip' => $_SERVER['REMOTE_ADDR'],
+        'downloadedon:>' => $tenMinAgo,
+    ));
+    if ($double <= 0) {
+        $unique = $modx->getCount('feoDownload',array(
+            'path' => $curPath,
+            'ip' => $_SERVER['REMOTE_ADDR'],
+        ));
+
+        $dl = $modx->newObject('feoDownload');
+        $dl->set('path',$curPath);
+        $dl->set('ip',$_SERVER['REMOTE_ADDR']);
+        $dl->set('downloadedon',strftime('%Y-%m-%d %H:%M:%S'));
+        $dl->set('unique',$unique > 0 ? false : true);
+        $dl->set('referer',$_SERVER['HTTP_REFERER']);
+
+        $modx->loadClass('geolocation.geolocation',$filelister->config['modelPath'],true,true);
+        $geo = new geolocation(true);
+        $geo->useUSServer();
+        $geo->setTimeout(2);
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $geo->setIP($ip != '::1' ? $ip : '127.0.0.1');
+        $locations = $geo->getGeoLocation();
+        $geolocation = array();
+        if (!empty($locations[0]) && is_array($locations[0])) {
+            $gl = $locations[0];
+            $dl->set('geolocation',$gl);
+            $dl->set('country',$gl['CountryCode']);
+            $dl->set('region',$gl['RegionName']);
+            $dl->set('city',$gl['City']);
+            $dl->set('zip',$gl['ZipPostalCode']);
+        }
+        if ($modx->user->hasSessionContext($modx->context->get('key'))) {
+            $dl->set('user',$modx->user->get('id'));
+        }
+        $dl->save();
+    }
+
+
     $filelister->loadHeaders($curPath);
     $o = file_get_contents($curPath);
     echo $o;
@@ -89,6 +135,7 @@ unset($requireAuthContext,$allowDownloadGroups);
 $count = 0;
 $directoryCount = 0;
 $fileCount = 0;
+$totalDownloads = 0;
 $directories = array();
 $files = array();
 foreach (new DirectoryIterator($curPath) as $file) {
@@ -107,6 +154,9 @@ foreach (new DirectoryIterator($curPath) as $file) {
     $fileArray['path'] = $file->getPathname();
     $fileArray['relativePath'] = $filePath;
     $fileArray['navKey'] = $navKey;
+    $fileArray['showDownloads'] = $showDownloads;
+
+    /* if allowing for downloading, generate a link here */
     if ($file->isDir() || $canDownload) {
         $fileArray['link'] = $filelister->getChunk($fileLinkTpl,array(
             'url' => $modx->makeUrl($modx->resource->get('id'),'',array(
@@ -117,14 +167,26 @@ foreach (new DirectoryIterator($curPath) as $file) {
     } else {
         $fileArray['link'] = $fileArray['filename'];
     }
+    /* if resource is a file */
     if ($file->isFile() && $showFiles) {
         $fileArray['extension'] = pathinfo($fileArray['path'],PATHINFO_EXTENSION);
         if (!empty($showExt) && !in_array($fileArray['extension'],$showExt)) continue;
         
         $fileArray['lastmod'] = $file->getMTime();
         $fileArray['dateFormat'] = $dateFormat;
+
+        /* get download count for file */
+        if ($showDownloads) {
+            $w = array('path' => $fileArray['path']);
+            if ($uniqueDownloads) $w['unique'] = true;
+            $fileArray['downloads'] = $modx->getCount('feoDownload',$w);
+            $totalDownloads += (int)$fileArray['downloads'];
+        }
+
         $files[] = $fileArray;
         $fileCount++;
+        
+    /* else if resource is a directory */
     } elseif ($file->isDir() && $showDirectories) {
         $directories[] = $fileArray;
         $directoryCount++;
@@ -152,6 +214,7 @@ switch ($sortBy.'-'.$sortDir) {
 if (!empty($algo)) { uasort($files,$algo); }
 unset($algo,$sortBy,$sortDir);
 
+/* get templated chunks for each fs resource */
 foreach ($directories as $directory) {
     $list[] = $filelister->getChunk($directoryTpl,$directory);
 }
@@ -170,6 +233,7 @@ $placeholders = array(
     'total' => $count,
     'total.files' => $fileCount,
     'total.directories' => $directoryCount,
+    'total.downloads' => $totalDownloads,
     'path' => $filelister->parsePathIntoLinks($relPath,$path,$pathTpl,$pathSeparator,$navKey),
     'relativePath' => $relPath,
 );
