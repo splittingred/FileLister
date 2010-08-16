@@ -1,5 +1,9 @@
 Changelog for FileLister.
 
+FileLister 1.0.1
+====================================
+- Fixed bug with outputSeparator property that occurs on some environments
+
 FileLister 1.0.0
 ====================================
 - Added file download counting

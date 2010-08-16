@@ -39,7 +39,6 @@ $fileTpl = $modx->getOption('fileTpl',$scriptProperties,'feoFile');
 $fileLinkTpl = $modx->getOption('fileLinkTpl',$scriptProperties,'feoFileLink');
 $directoryTpl = $modx->getOption('directoryTpl',$scriptProperties,'feoDirectory');
 $dateFormat = $modx->getOption('dateFormat',$scriptProperties,'%b %d, %Y');
-$outputSeparator = $modx->getOption('outputSeparator',$scriptProperties,"\n");
 $skipDirs = $modx->getOption('skipDirs',$scriptProperties,'.svn,.git,.metadata,.tmp,.DS_Store,_notes');
 $skipDirs = array_merge(array('.','..'),explode(',',$skipDirs));
 $placeholderPrefix = $modx->getOption('placeholderPrefix',$scriptProperties,'filelister');
@@ -240,6 +239,7 @@ $placeholders = array(
 $modx->toPlaceholders($placeholders,$placeholderPrefix);
 
 /* output */
+$outputSeparator = $modx->getOption('outputSeparator',$scriptProperties,'');
 $output = implode($outputSeparator,$list);
 $toPlaceholder = $modx->getOption('toPlaceholder',$scriptProperties,false);
 if ($toPlaceholder) {
