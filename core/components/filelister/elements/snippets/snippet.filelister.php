@@ -242,7 +242,27 @@ $modx->toPlaceholders($placeholders,$placeholderPrefix);
 
 /* output */
 $outputSeparator = $modx->getOption('outputSeparator',$scriptProperties,'');
-$output = implode($outputSeparator,$list);
+if (count($list) > 0) {
+    /* pagination handling in conjunction with getPage */
+    $limit = (int)$modx->getOption('limit',$scriptProperties,0);
+    if (!empty($limit)) {
+        $pageVarKey = $modx->getOption('pageVarKey',$scriptProperties,'page');
+        $page = (int)$modx->getOption($pageVarKey,$scriptProperties,$modx->getOption($pageVarKey,$_REQUEST,1));
+        $offset = (int)$modx->getOption('offset',$scriptProperties,0);
+        /* cut the list of file into blocks */
+        $list = array_chunk($list,$limit,true);
+        /* output the current listing block */
+        $output = implode($outputSeparator,$list[$page - 1]);
+        /* need to make the total available without placeholder prefix for getPage */
+        $modx->setPlaceholder('total',$count);
+    } else {
+        /* no pagination so display all results */
+        $output = implode($outputSeparator,$list);
+    }
+} else {
+  /* empty directory so display nothing */
+  $output = '';
+}
 $toPlaceholder = $modx->getOption('toPlaceholder',$scriptProperties,false);
 if ($toPlaceholder) {
     $modx->setPlaceholder($toPlaceholder,$output);
