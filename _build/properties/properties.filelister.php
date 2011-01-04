@@ -197,6 +197,14 @@ $properties = array(
         'lexicon' => 'filelister:properties',
     ),
     array(
+        'name' => 'useGeolocation',
+        'desc' => 'prop_feo.usegeolocation_desc',
+        'type' => 'combo-boolean',
+        'options' => '',
+        'value' => true,
+        'lexicon' => 'filelister:properties',
+    ),
+    array(
         'name' => 'toPlaceholder',
         'desc' => 'prop_feo.toplaceholder_desc',
         'type' => 'textfield',

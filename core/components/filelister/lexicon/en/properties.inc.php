@@ -53,5 +53,6 @@ $_lang['prop_feo.requireauthdownload_desc'] = 'If true, will require users be lo
 $_lang['prop_feo.allowdownloadgroups_desc'] = 'A comma-separated list that, if set, will restrict file viewing/downloading to users in the specified groups.';
 $_lang['prop_feo.showdownloads_desc'] = 'If true, will show download counts next to files.';
 $_lang['prop_feo.uniquedownloads_desc'] = 'If true, will show only unique downloads - meaning one download count per IP.';
+$_lang['prop_feo.usegeolocation_desc'] = 'If true, will use Geolocation services at ipinfodb.com to determine the location of the downloader. Requires an API key from ipinfodb.com.';
 $_lang['prop_feo.toplaceholder_desc'] = 'If set, will set the output to a placeholder with the specified name rather than directly outputting it.';
 $_lang['prop_feo.navkey_desc'] = 'The REQUEST navigation key used for the browsing.';

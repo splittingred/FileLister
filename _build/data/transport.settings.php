@@ -38,6 +38,15 @@ $settings['filelister.allow_root_paths']->fromArray(array(
     'area' => 'Security',
 ),'',true,true);
 
+$settings['filelister.ipinfodb_api_key']= $modx->newObject('modSystemSetting');
+$settings['filelister.ipinfodb_api_key']->fromArray(array(
+    'key' => 'filelister.ipinfodb_api_key',
+    'value' => '',
+    'xtype' => 'textfield',
+    'namespace' => 'filelister',
+    'area' => 'Geolocation',
+),'',true,true);
+
 $settings['filelister.salt']= $modx->newObject('modSystemSetting');
 $settings['filelister.salt']->fromArray(array(
     'key' => 'filelister.salt',

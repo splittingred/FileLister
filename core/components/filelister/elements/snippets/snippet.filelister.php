@@ -51,6 +51,7 @@ $showExt = $modx->getOption('showExt',$scriptProperties,'');
 if (!empty($showExt)) $showExt = explode(',',$showExt);
 $showDownloads = $modx->getOption('showDownloads',$scriptProperties,true);
 $uniqueDownloads = $modx->getOption('uniqueDownloads',$scriptProperties,true);
+$useGeolocation = $modx->getOption('useGeolocation',$scriptProperties,true);
 
 /* get relPath and curPath */
 $fd = $modx->getOption($navKey,$_REQUEST,false);
@@ -84,26 +85,27 @@ if (!is_dir($curPath) && is_file($curPath)) {
         $dl->set('unique',$unique > 0 ? false : true);
         $dl->set('referer',$_SERVER['HTTP_REFERER']);
 
-        $modx->loadClass('geolocation.geolocation',$filelister->config['modelPath'],true,true);
-        $geo = new geolocation(true);
-        $geo->useUSServer();
-        $geo->setTimeout(2);
-        $ip = $_SERVER['REMOTE_ADDR'];
-        $geo->setIP($ip != '::1' ? $ip : '127.0.0.1');
-        $locations = $geo->getGeoLocation();
-        $geolocation = array();
-        if (!empty($locations[0]) && is_array($locations[0])) {
-            $gl = $locations[0];
-            $dl->set('geolocation',$gl);
-            $dl->set('country',$gl['CountryCode']);
-            $dl->set('region',$gl['RegionName']);
-            $dl->set('city',$gl['City']);
-            $dl->set('zip',$gl['ZipPostalCode']);
+        $geoApiKey = $modx->getOption('filelister.ipinfodb_api_key',$scriptProperties,'');
+        if ($useGeolocation && !empty($geoApiKey)) {
+            $modx->loadClass('geolocation.ipinfodb',$filelister->config['modelPath'],true,true);
+            $geo = new ipinfodb($modx);
+            $geo->setKey($geoApiKey);
+            $locations = $geo->getGeoLocation($_SERVER['REMOTE_ADDR']);
+            $geolocation = array();
+            if (!empty($locations[0]) && is_array($locations[0])) {
+                $gl = $locations[0];
+                $dl->set('geolocation',$gl);
+                $dl->set('country',$gl['CountryCode']);
+                $dl->set('region',$gl['RegionName']);
+                $dl->set('city',$gl['City']);
+                $dl->set('zip',$gl['ZipPostalCode']);
+            }
+            if ($modx->user->hasSessionContext($modx->context->get('key'))) {
+                $dl->set('user',$modx->user->get('id'));
+            }
+            $dl->save();
         }
-        if ($modx->user->hasSessionContext($modx->context->get('key'))) {
-            $dl->set('user',$modx->user->get('id'));
-        }
-        $dl->save();
+
     }
 
 

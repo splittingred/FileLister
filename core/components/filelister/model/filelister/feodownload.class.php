@@ -25,4 +25,3 @@
  * @package filelister
  */
 class feoDownload extends xPDOSimpleObject {}
-?>
