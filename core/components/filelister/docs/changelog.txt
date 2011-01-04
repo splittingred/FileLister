@@ -2,6 +2,7 @@ Changelog for FileLister.
 
 FileLister 1.1.0
 ====================================
+- [#3] Add cls, altCls, firstCls, and lastCls properties for adding CSS classes
 - [#4] Add getPage support
 - Add property useGeolocation to toggle use of geolocation services on downloads
 - [#7] Update geolocation to new service, added system setting filelister.ipinfodb_api_key

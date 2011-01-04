@@ -45,13 +45,18 @@ $placeholderPrefix = $modx->getOption('placeholderPrefix',$scriptProperties,'fil
 $pathSeparator = $modx->getOption('pathSeparator',$scriptProperties,'/');
 $pathTpl = $modx->getOption('pathTpl',$scriptProperties,'feoPathLink');
 $navKey = $modx->getOption('navKey',$scriptProperties,'fd');
-$showFiles = $modx->getOption('showFiles',$scriptProperties,true);
-$showDirectories = $modx->getOption('showDirectories',$scriptProperties,true);
+$showFiles = (boolean)$modx->getOption('showFiles',$scriptProperties,true);
+$showDirectories = (boolean)$modx->getOption('showDirectories',$scriptProperties,true);
 $showExt = $modx->getOption('showExt',$scriptProperties,'');
 if (!empty($showExt)) $showExt = explode(',',$showExt);
-$showDownloads = $modx->getOption('showDownloads',$scriptProperties,true);
-$uniqueDownloads = $modx->getOption('uniqueDownloads',$scriptProperties,true);
-$useGeolocation = $modx->getOption('useGeolocation',$scriptProperties,true);
+$showDownloads = (boolean)$modx->getOption('showDownloads',$scriptProperties,true);
+$uniqueDownloads = (boolean)$modx->getOption('uniqueDownloads',$scriptProperties,true);
+$useGeolocation = (boolean)$modx->getOption('useGeolocation',$scriptProperties,true);
+$limit = (int)$modx->getOption('limit',$scriptProperties,0);
+$cls = $modx->getOption('cls',$scriptProperties,'feo-row');
+$altCls = $modx->getOption('altCls',$scriptProperties,'feo-alt-row');
+$firstCls = $modx->getOption('firstCls',$scriptProperties,'feo-first-row');
+$lastCls = $modx->getOption('lastCls',$scriptProperties,'feo-last-row');
 
 /* get relPath and curPath */
 $fd = $modx->getOption($navKey,$_REQUEST,false);
@@ -216,12 +221,25 @@ if (!empty($algo)) { uasort($files,$algo); }
 unset($algo,$sortBy,$sortDir);
 
 /* get templated chunks for each fs resource */
+$i = 0;
+$totalCount = count($directories) + count($files);
+if ($totalCount > $limit) $totalCount = $limit; /* getPage compat */
 foreach ($directories as $directory) {
+    $odd = $i % 2;
+    $directory['cls'] = $odd ? $altCls : $cls;
+    if ($i == 0) $directory['cls'] .= ' '.$firstCls;
+    if ($i == ($totalCount-1)) $directory['cls'] .= ' '.$lastCls;
     $list[] = $filelister->getChunk($directoryTpl,$directory);
+    $i++;
 }
 unset($directory);
 foreach ($files as $file) {
+    $odd = $i % 2;
+    $file['cls'] = $odd ? $altCls : $cls;
+    if ($i == 0) $file['cls'] .= ' '.$firstCls;
+    if ($i == ($totalCount-1)) $file['cls'] .= ' '.$lastCls;
     $list[] = $filelister->getChunk($fileTpl,$file);
+    $i++;
 }
 unset($file);
 
@@ -244,7 +262,6 @@ $modx->toPlaceholders($placeholders,$placeholderPrefix);
 $outputSeparator = $modx->getOption('outputSeparator',$scriptProperties,'');
 if (count($list) > 0) {
     /* pagination handling in conjunction with getPage */
-    $limit = (int)$modx->getOption('limit',$scriptProperties,0);
     if (!empty($limit)) {
         $pageVarKey = $modx->getOption('pageVarKey',$scriptProperties,'page');
         $page = (int)$modx->getOption($pageVarKey,$scriptProperties,$modx->getOption($pageVarKey,$_REQUEST,1));
