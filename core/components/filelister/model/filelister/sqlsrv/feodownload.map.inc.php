@@ -23,8 +23,8 @@ $xpdo_meta_map['feoDownload']= array (
   array (
     'path' => 
     array (
-      'dbtype' => 'varchar',
-      'precision' => '255',
+      'dbtype' => 'nvarchar',
+      'precision' => 'max',
       'phptype' => 'string',
       'null' => false,
       'default' => '',
@@ -32,7 +32,7 @@ $xpdo_meta_map['feoDownload']= array (
     ),
     'ip' => 
     array (
-      'dbtype' => 'varchar',
+      'dbtype' => 'nvarchar',
       'precision' => '25',
       'phptype' => 'string',
       'null' => false,
@@ -46,9 +46,7 @@ $xpdo_meta_map['feoDownload']= array (
     ),
     'unique' => 
     array (
-      'dbtype' => 'tinyint',
-      'precision' => '1',
-      'attributes' => 'unsigned',
+      'dbtype' => 'bit',
       'phptype' => 'boolean',
       'null' => false,
       'default' => 0,
@@ -56,7 +54,7 @@ $xpdo_meta_map['feoDownload']= array (
     ),
     'referer' => 
     array (
-      'dbtype' => 'varchar',
+      'dbtype' => 'nvarchar',
       'precision' => '255',
       'phptype' => 'string',
       'null' => false,
@@ -64,7 +62,7 @@ $xpdo_meta_map['feoDownload']= array (
     ),
     'country' => 
     array (
-      'dbtype' => 'varchar',
+      'dbtype' => 'nvarchar',
       'precision' => '255',
       'phptype' => 'string',
       'null' => false,
@@ -72,7 +70,7 @@ $xpdo_meta_map['feoDownload']= array (
     ),
     'region' => 
     array (
-      'dbtype' => 'varchar',
+      'dbtype' => 'nvarchar',
       'precision' => '255',
       'phptype' => 'string',
       'null' => false,
@@ -80,7 +78,7 @@ $xpdo_meta_map['feoDownload']= array (
     ),
     'city' => 
     array (
-      'dbtype' => 'varchar',
+      'dbtype' => 'nvarchar',
       'precision' => '255',
       'phptype' => 'string',
       'null' => false,
@@ -88,7 +86,7 @@ $xpdo_meta_map['feoDownload']= array (
     ),
     'zip' => 
     array (
-      'dbtype' => 'varchar',
+      'dbtype' => 'nvarchar',
       'precision' => '30',
       'phptype' => 'string',
       'null' => false,

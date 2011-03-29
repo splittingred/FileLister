@@ -2,6 +2,7 @@ Changelog for FileLister.
 
 FileLister 1.1.0
 ====================================
+- Add sqlsrv support
 - [#3] Add cls, altCls, firstCls, and lastCls properties for adding CSS classes
 - [#4] Add getPage support
 - Add property useGeolocation to toggle use of geolocation services on downloads
