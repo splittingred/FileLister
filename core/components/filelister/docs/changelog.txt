@@ -2,6 +2,7 @@ Changelog for FileLister.
 
 FileLister 1.1.1
 ====================================
+- [#15] Add better support for large files
 - [#15] Add support for wmv type header
 - [#11] Fix issue with windows file paths and mappings
 - [#12] Fix issue where download never saved if geolocation is off

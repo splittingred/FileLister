@@ -118,10 +118,8 @@ if (!is_dir($curPath) && is_file($curPath)) {
 
     }
 
-
     $fileLister->loadHeaders($curPath);
-    $o = file_get_contents($curPath);
-    echo $o;
+    $fileLister->renderFile($curPath);
     die();
 } elseif (!is_dir($curPath)) {
     /* if an invalid path, set to base */

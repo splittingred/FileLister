@@ -252,6 +252,8 @@ class FileLister {
      * @param string $root The root of the path being processed
      * @param string $tpl The Chunk name for each path item
      * @param string $separator The separator between each path item
+     * @param string $navKey
+     * @return string
      */
     public function parsePathIntoLinks($path,$root = '/',$tpl = 'feoPathLink',$separator = '/',$navKey = 'fd') {
         $root = trim($root,'/');
@@ -278,5 +280,31 @@ class FileLister {
         }
         $output = str_replace('//','/',$output);
         return $output;
+    }
+
+    /**
+     * Render and output a file to the browser
+     * @param string $path
+     * @return void
+     */
+    public function renderFile($path) {
+        // If it's a large file we don't want the script to timeout, so:
+        @set_time_limit(300);
+        // If it's a large file, readfile might not be able to do it in one go, so:
+        $absolutePath = $path;
+        $chunkSize = 1 * (1024 * 1024); // how many bytes per chunk
+        $fileSize = intval(sprintf("%u", filesize($absolutePath)));
+        if ($fileSize > $chunkSize) {
+            $handle = fopen($absolutePath, 'rb');
+            while (!feof($handle)) {
+                $buffer = fread($handle, $chunkSize);
+                echo $buffer;
+                ob_flush();
+                flush();
+            }
+            fclose($handle);
+        } else {
+            readfile($absolutePath);
+        }
     }
 }
