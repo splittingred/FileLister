@@ -202,6 +202,7 @@ class feoHeaders {
         'wdb' => 'application/vnd.ms-works',
         'wks' => 'application/vnd.ms-works',
         'wmf' => 'application/x-msmetafile',
+        'wmv' => 'video/x-ms-wmv',
         'wps' => 'application/vnd.ms-works',
         'wri' => 'application/x-mswrite',
         'wrl' => 'x-world/x-vrml',
