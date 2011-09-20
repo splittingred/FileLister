@@ -163,7 +163,7 @@ foreach (new DirectoryIterator($curPath) as $file) {
     $fileArray['filename'] = $file->getFilename();
     $fileArray['bytesize'] = $file->getSize();
     $fileArray['filesize'] = $fileLister->formatBytes($file->getSize());
-    $fileArray['path'] = $file->getPathname();
+    $fileArray['path'] = str_replace('\\', '/', $file->getPathname());
     $fileArray['relativePath'] = $filePath;
     $fileArray['navKey'] = $navKey;
     $fileArray['showDownloads'] = $showDownloads;
