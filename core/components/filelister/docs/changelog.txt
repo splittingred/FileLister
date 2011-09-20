@@ -1,5 +1,9 @@
 Changelog for FileLister.
 
+FileLister 1.1.1
+====================================
+- [#12] Fix issue where download never saved if geolocation is off
+
 FileLister 1.1.0
 ====================================
 - Add sqlsrv support
